@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>مارکت محله</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="vendors/ti-icons/css/themify-icons.css">
+  <link rel="stylesheet" href="vendors/base/vendor.bundle.base.css">
+  <!-- endinject -->
+  <!-- plugin css for this page -->
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="css/style.css">
+  <!-- endinject -->
+  <link rel="shortcut icon" href="images/favicon.png" />
+</head>
+
+<body>
+  <div class="container-scroller">
+    <!-- partial:partials/_navbar.html -->
+    <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+        <a class="navbar-brand brand-logo me-5" href="index.html"><img src="images/logo.svg" class="me-2"
+            alt="logo" /></a>
+        <a class="navbar-brand brand-logo-mini" href="index.html"><img src="images/logo-mini.svg" alt="logo" /></a>
+      </div>
+      <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+        <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+          <span class="ti-view-list"></span>
+        </button>
+        <ul class="navbar-nav navbar-nav-right mr-lg-2">
+          <li class="nav-item nav-search d-none d-lg-block">
+            <div class="input-group">
+              <div class="input-group-prepend hover-cursor" id="navbar-search-icon">
+                <span class="input-group-text" id="search">
+                  <i class="ti-search"></i>
+                </span>
+              </div>
+              <input type="text" class="form-control" id="navbar-search-input" name="q" aria-label="search"
+                aria-describedby="search">
+            </div>
+          </li>
+        </ul>
+        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
+          data-toggle="offcanvas">
+          <span class="ti-view-list"></span>
+        </button>
+      </div>
+    </nav>
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      <!-- partial:partials/_sidebar.html -->
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <ul class="nav">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">
+              <i class="ti-shopping-cart menu-icon"></i>
+              <span class="menu-title">فروش</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false"
+              aria-controls="ui-basic">
+              <i class="ti-package menu-icon"></i>
+              <span class="menu-title">کالا‌ها</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="ui-basic">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="products.html">لیست کالا‌ها</a>
+                </li>
+                <li class="nav-item"> <a class="nav-link" href="product.html">کالا‌ جدید</a>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </nav>
+      <!-- partial -->
+      <div class="main-panel">
+        <div class="content-wrapper">
+
+          <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">لیست کالا‌ها</h4>
+                  <div class="table-responsive">
+                    <table id="products" class="table">
+                      <thead>
+                        <tr>
+                          <th>بارکد</th>
+                          <th>نام</th>
+                          <th>قیمت(ریال)</th>
+                          <th>مدیریت</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <!-- content-wrapper ends -->
+      </div>
+      <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+
+  <script src="vendors/base/vendor.bundle.base.js"></script>
+  <script src="js/template.js"></script>
+  <script src="js/helper.js"></script>
+  <script>
+    var productTable = document.querySelector("table#products");
+
+    // looking for query in url for search product
+    let urlParams = new URLSearchParams(window.location.search);
+    let query = urlParams.get("q");
+
+    if (query) {
+      var url = "http://localhost:8080/" + "products/search/" + query;
+    } else {
+      var url = "http://localhost:8080/" + "products";
+    }
+
+    (async function () {
+      let requestOptions = {
+        method: 'GET',
+        redirect: 'follow'
+      };
+      let response = await fetch(url, requestOptions);
+      if (response.ok) {
+        let result = await response.json();
+        if (result.products.length === 0) {
+          let newRow = productTable.insertRow(-1);
+          newRow.insertCell(0).appendChild(document.createTextNode("هیج کالایی پیدا نشد."));
+        } else {
+          result.products.forEach(async (product) => {
+            let newRow = productTable.insertRow(-1);
+            newRow.insertCell(0).appendChild(document.createTextNode(product.barcode));
+            newRow.insertCell(1).appendChild(document.createTextNode(product.name));
+            newRow.insertCell(2).appendChild(document.createTextNode(await makeReadablePrice(product.price)));
+            newRow.insertCell(3).innerHTML = "<a href='product.html?barcode=" + product.barcode + "'>بروزرسانی</a>";
+          });
+        }
+      } else {
+        alert("HTTP-Error: " + response.status);
+      }
+    })();
+
+  </script>
+</body>
+
+</html>

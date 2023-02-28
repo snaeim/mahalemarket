@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>مارکت محله</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="vendors/ti-icons/css/themify-icons.css">
+  <link rel="stylesheet" href="vendors/base/vendor.bundle.base.css">
+  <!-- endinject -->
+  <!-- plugin css for this page -->
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="css/style.css">
+  <!-- endinject -->
+  <link rel="shortcut icon" href="images/favicon.png" />
+  <style>
+    input[type="number"]:not(.hide-arrow-btn) {
+      width: 100px;
+      border: none;
+      margin: 0;
+    }
+
+    .remove-item {
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-scroller">
+    <!-- partial:partials/_navbar.html -->
+    <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+        <a class="navbar-brand brand-logo me-5" href="index.html"><img src="images/logo.svg" class="me-2"
+            alt="logo" /></a>
+        <a class="navbar-brand brand-logo-mini" href="index.html"><img src="images/logo-mini.svg" alt="logo" /></a>
+      </div>
+      <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+        <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+          <span class="ti-view-list"></span>
+        </button>
+        <ul class="navbar-nav navbar-nav-right mr-lg-2">
+          <li class="nav-item nav-search d-none d-lg-block">
+            <div class="input-group">
+              <div class="input-group-prepend hover-cursor" id="navbar-search-icon">
+                <span class="input-group-text" id="search">
+                  <i class="ti-search"></i>
+                </span>
+              </div>
+              <input type="text" class="form-control" id="navbar-search-input" aria-label="search"
+                aria-describedby="search">
+            </div>
+          </li>
+        </ul>
+        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
+          data-toggle="offcanvas">
+          <span class="ti-view-list"></span>
+        </button>
+      </div>
+    </nav>
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      <!-- partial:partials/_sidebar.html -->
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <ul class="nav">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">
+              <i class="ti-shopping-cart menu-icon"></i>
+              <span class="menu-title">فروش</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false"
+              aria-controls="ui-basic">
+              <i class="ti-package menu-icon"></i>
+              <span class="menu-title">کالا‌ها</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="ui-basic">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="products.html">لیست کالا‌ها</a>
+                </li>
+                <li class="nav-item"> <a class="nav-link" href="product.html">کالا‌ جدید</a>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </nav>
+      <!-- partial -->
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+
+            <div class="col-4 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">کلیات خرید</h4>
+                  <div class="form-group">
+                    <label for="barcode">بارکد</label>
+                    <input type="number" class="form-control form-control-lg hide-arrow-btn" id="barcode" required
+                      autocomplete="off">
+                  </div>
+                  <div id="total-price">
+                    <h2 style="margin-bottom: 30px;"><span id="price-string">۰</span> تومان</h2>
+                    <h2><span id="price-number">0</span> ریال</h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-8 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">ریز خرید</h4>
+                  <div class="table-responsive">
+                    <table id="products" class="table">
+                      <thead>
+                        <tr>
+                          <th>نام</th>
+                          <th>تعداد</th>
+                          <th>قیمت(ریال)</th>
+                          <th>مدیریت</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <!-- content-wrapper ends -->
+      </div>
+      <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+
+  <script src="vendors/base/vendor.bundle.base.js"></script>
+  <script src="js/template.js"></script>
+  <script src="js/helper.js"></script>
+  <script>
+    var barcodeInput = document.querySelector("#barcode");
+    var priceNumInput = document.querySelector("#price-number");
+    var priceStrInput = document.querySelector("#price-string");
+    var productTable = document.querySelector("table#products");
+
+    readyToScan();
+
+    barcodeInput.addEventListener('keydown', async (e) => {
+      if (e.key !== "Enter" || barcodeInput.value == '') {
+        return;
+      }
+
+      // save barcode and ready input for next scan
+      let scannedBarcode = barcodeInput.value;
+      readyToScan();
+
+      let existedItem = document.querySelector("input#b" + scannedBarcode);
+      // check if item already exist in list
+      if (existedItem) {
+        existedItem.value = parseInt(existedItem.value) + 1;
+        calcMultiItem(existedItem);
+      } else {
+        let url = "http://localhost:8080/" + "products/" + scannedBarcode;
+        let requestOptions = {
+          method: 'GET',
+          redirect: 'follow'
+        };
+        let response = await fetch(url, requestOptions);
+        if (response.ok) {
+          let result = await response.json();
+          let product = result.product;
+          let newRow = productTable.insertRow(-1);
+          newRow.insertCell(0).appendChild(document.createTextNode(product.name));
+          newRow.insertCell(1).innerHTML = '<input class="single-item" id="b' + product.barcode + '" data-price="' + product.price + '" onchange="calcMultiItem(this)" onkeyup="calcMultiItem(this)" value="1" type="number" min="1">';
+          newRow.insertCell(2).innerHTML = '<span id="p' + product.barcode + '">' + await makeReadablePrice(product.price) + '</span';
+          newRow.insertCell(3).innerHTML = '<span class="remove-item" onclick="removeItem(this)"><i class="ti-close"></i></span';
+        } else {
+          alert("HTTP-Error: " + response.status);
+        }
+        showTotalPrice(await getTotalPrice());
+      }
+    });
+
+    // calculate price for a multi item from single product 
+    async function calcMultiItem(item) {
+      if (parseInt(item.value) < 1 || item.value == '') {
+        item.value = 1;
+      }
+      let barcode = item.id.slice(1);
+      document.querySelector("#p" + barcode).innerHTML = await makeReadablePrice(item.value * item.dataset.price);
+      showTotalPrice(await getTotalPrice());
+    }
+
+    // show price in human readable format user
+    async function showTotalPrice(totalPrice) {
+      let priceNum = await makeReadablePrice(totalPrice);
+      let priceStr = await numberToWords(Math.round(totalPrice / 10));
+      priceNumInput.innerHTML = priceNum;
+      priceStrInput.innerHTML = priceStr;
+    }
+
+    // calculate total price and return total price of all items
+    function getTotalPrice() {
+      return new Promise(resolve => {
+        let items = document.querySelectorAll('.single-item');
+        let totalPrice = 0;
+        for (let i = 0; i < items.length; i++) {
+          totalPrice += items[i].value * items[i].dataset.price;
+        }
+        resolve(totalPrice);
+      });
+    }
+
+    async function removeItem(delBtn) {
+      delBtn.closest("tr").remove();
+      showTotalPrice(await getTotalPrice());
+    }
+
+    function readyToScan() {
+      barcodeInput.value = '';
+      barcodeInput.focus();
+    }
+
+  </script>
+</body>
+
+</html>

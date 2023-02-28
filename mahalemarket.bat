@@ -1,0 +1,1 @@
+START /B node bin\www

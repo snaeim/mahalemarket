@@ -272,6 +272,8 @@
         let response = await fetch(url, requestOptions);
         if (response.ok) {
           let result = await response.json();
+          productForm.reset();
+          barcodeInput.focus();
           alert(result.product.name + " قبلا ثبت شده.");
         }
       }

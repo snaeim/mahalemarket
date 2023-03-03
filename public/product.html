@@ -136,6 +136,7 @@
     // get the form from DOM
     var productForm = document.querySelector("form#product");
     var priceInput = document.querySelector("input#price");
+    var barcodeInput = document.querySelector("input#barcode");
     var priceStr = document.querySelector("#price-string");
     productForm.reset();
 
@@ -146,8 +147,8 @@
 
     if (queryBarcode) {
 
-      productForm.querySelector("input#barcode").value = queryBarcode;
-      productForm.querySelector("input#barcode").disabled = true;
+      barcodeInput.value = queryBarcode;
+      barcodeInput.disabled = true;
       productForm.querySelectorAll("button").forEach(btn => btn.disabled = true);
 
       (async function () {
@@ -159,7 +160,7 @@
         let response = await fetch(url, requestOptions);
         if (response.ok) {
           let result = await response.json();
-          productForm.querySelector("input#barcode").value = result.product.barcode;
+          barcodeInput.value = result.product.barcode;
           productForm.querySelector("input#name").value = result.product.name;
           productForm.querySelector("input#price").value = result.product.price;
           productForm.querySelector("button[type=submit]").value = 'update';
@@ -171,7 +172,7 @@
                 method: 'DELETE',
                 redirect: 'follow'
               };
-              let url = "http://localhost:8080/" + "products/" + productForm.querySelector("input#barcode").value;
+              let url = "http://localhost:8080/" + "products/" + barcodeInput.value;
               let response = await fetch(url, requestOptions);
               if (response.ok) {
                 alert("کالا حذف شد.");
@@ -202,7 +203,7 @@
           name: productForm.querySelector("input#name").value,
           price: productForm.querySelector("input#price").value
         });
-        let url = "http://localhost:8080/" + "products/" + productForm.querySelector("input#barcode").value;
+        let url = "http://localhost:8080/" + "products/" + barcodeInput.value;
         let myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         let requestOptions = {
@@ -223,7 +224,7 @@
       // if submit value is "create" then send request for create new product
       if (productForm.querySelector("button[type=submit]").value == 'create') {
         let raw = JSON.stringify({
-          barcode: productForm.querySelector("input#barcode").value,
+          barcode: barcodeInput.value,
           name: productForm.querySelector("input#name").value,
           price: productForm.querySelector("input#price").value
         });
@@ -243,7 +244,8 @@
           let result = await response.json();
           alert("کالا اضافه شد.")
           productForm.reset();
-          productForm.querySelector("input#barcode").focus();
+          barcodeInput.focus();
+          priceStr.innerHTML = 'صفر';
         } else {
           alert("HTTP-Error: " + response.status);
         }
@@ -259,6 +261,21 @@
       priceStr.innerHTML = await numberToWords(Math.round(priceInput.value / 10));
     }
     priceInput.addEventListener("keyup", showStringPrice);
+
+    barcodeInput.addEventListener('keypress', async (e) => {
+      if (e.key === 'Enter') {
+        let url = "http://localhost:8080/" + "products/" + barcodeInput.value;
+        let requestOptions = {
+          method: 'GET',
+          redirect: 'follow'
+        };
+        let response = await fetch(url, requestOptions);
+        if (response.ok) {
+          let result = await response.json();
+          alert(result.product.name + " قبلا ثبت شده.");
+        }
+      }
+    });
 
   </script>
 </body>
